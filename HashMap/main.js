@@ -2,8 +2,24 @@ class HashMap {
   constructor() {
     this.loadFactor = 0.75;
     this.capacity = 16;
-    this.buckets = [[], [], [], [], [], [], [], [], [], [], [], []];
+    this.buckets = new Array(this.capacity * this.loadFactor)
+      .fill(null)
+      .map(() => []);
     this.length = 0;
+  }
+
+  resize() {
+    this.capacity *= 2;
+    const newBuckets = new Array(this.capacity * this.loadFactor)
+      .fill(null)
+      .map(() => []);
+    for (const bucket of this.buckets) {
+      for (const { key, value } of bucket) {
+        const newHash = this.hash(key);
+        newBuckets[newHash].push({ key, value });
+      }
+    }
+    this.buckets = newBuckets;
   }
 
   hash(key) {
@@ -41,6 +57,10 @@ class HashMap {
     }
     bucket.push({ key, value });
     this.length++;
+
+    if (this.length >= this.capacity * this.loadFactor) {
+      this.resize();
+    }
   }
 
   get(key) {
@@ -81,7 +101,8 @@ class HashMap {
   }
 
   clear() {
-    this.buckets = [[], [], [], [], [], [], [], [], [], [], [], []];
+    this.capacity = 16;
+    this.buckets = createBuckets(this.capacity * this.loadFactor);
     this.length = 0;
   }
 
@@ -134,3 +155,7 @@ console.log(test.entries());
 console.log("has", test.has("frog"));
 
 console.log("get", test.get("carrot"));
+
+console.log(test.entries());
+
+console.log(test.getLength());
