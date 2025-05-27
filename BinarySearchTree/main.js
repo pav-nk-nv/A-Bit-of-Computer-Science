@@ -11,8 +11,6 @@ class Tree {
     this.root = null;
   }
 
-  insert(value) {}
-
   deleteItem(value) {}
 
   find(value) {}
@@ -32,6 +30,29 @@ class Tree {
   isBalanced() {}
 
   rebalance() {}
+
+  insert(value) {
+    if (this.root === null) {
+      const root = new Node(value);
+      this.root = root;
+    }
+
+    const insertNode = (root, value) => {
+      if (root.value === value) return root;
+
+      if (value < root.value) {
+        root.left = insertNode(root.left, value);
+      }
+      if (value > root.value) {
+        root.right = insertNode(root.right, value);
+      }
+
+      return root;
+    };
+
+    this.root = insertNode(this.root, value);
+    return this.root;
+  }
 
   buildTree(array) {
     const normalizedArray = Array.from(new Set(array)).sort((a, b) => a - b);
