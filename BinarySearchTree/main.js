@@ -11,8 +11,6 @@ class Tree {
     this.root = null;
   }
 
-  deleteItem(value) {}
-
   find(value) {}
 
   levelOrder(callback) {}
@@ -30,6 +28,49 @@ class Tree {
   isBalanced() {}
 
   rebalance() {}
+
+  deleteItem(value) {
+    const getSuccessor = (current) => {
+      current = current.right;
+      while (current !== null && current.left !== null) {
+        current = current.left;
+      }
+      return current;
+    };
+
+    if (this.root === null) return null;
+
+    const delNode = (root, value) => {
+      if (root === null) {
+        return root;
+      }
+
+      if (value < root.value) {
+        root.left = delNode(root.left, value);
+      }
+      if (value > root.value) {
+        root.right = delNode(root.right, value);
+      } else {
+        if (root.left === null && root.right === null) {
+          root = null;
+          return root;
+        }
+        if (root.left === null) {
+          return root.right;
+        }
+
+        if (root.right === null) return root.left;
+
+        const succ = getSuccessor(root);
+        root.value = succ.value;
+        root.right = delNode(root.right, succ.value);
+      }
+      return root;
+    };
+
+    this.root = delNode(this.root, value);
+    return this.root;
+  }
 
   insert(value) {
     if (this.root === null) {
@@ -87,3 +128,5 @@ class Tree {
     }
   }
 }
+
+const newTree = new Tree();
