@@ -11,8 +11,6 @@ class Tree {
     this.root = null;
   }
 
-  levelOrder(callback) {}
-
   inOrder(callback) {}
 
   preOrder(callback) {}
@@ -26,6 +24,24 @@ class Tree {
   isBalanced() {}
 
   rebalance() {}
+
+  levelOrder(callback) {
+    if (!this.root) return this.root;
+    if (!callback) throw new Error("Callback is required");
+
+    const queue = [this.root];
+
+    let level = 1;
+    let currentLevel = 0;
+
+    while (!queue.length || currentLevel <= level) {
+      const currentNode = queue.shift();
+      if (currentNode.left !== null) queue.push(currentNode.left);
+      if (currentNode.right !== null) queue.push(currentNode.right);
+      callback(currentNode);
+      currentLevel++;
+    }
+  }
 
   find(value) {
     if (this.root === null) return this.root;
