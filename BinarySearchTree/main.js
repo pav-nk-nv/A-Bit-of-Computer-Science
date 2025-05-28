@@ -11,8 +11,6 @@ class Tree {
     this.root = null;
   }
 
-  find(value) {}
-
   levelOrder(callback) {}
 
   inOrder(callback) {}
@@ -29,6 +27,25 @@ class Tree {
 
   rebalance() {}
 
+  find(value) {
+    if (this.root === null) return this.root;
+
+    const searchNode = (root, value) => {
+      if (!root) return null;
+
+      if (root.value === value) return root;
+
+      if (value < root.value) {
+        return iter(root.left, value);
+      }
+      if (value > root.value) {
+        return iter(root.right, value);
+      }
+    };
+
+    return searchNode(this.root, value);
+  }
+
   deleteItem(value) {
     const getSuccessor = (current) => {
       current = current.right;
@@ -38,10 +55,10 @@ class Tree {
       return current;
     };
 
-    if (this.root === null) return null;
+    if (this.root === null) return this.root;
 
     const delNode = (root, value) => {
-      if (root === null) {
+      if (!root) {
         return root;
       }
 
@@ -51,15 +68,15 @@ class Tree {
       if (value > root.value) {
         root.right = delNode(root.right, value);
       } else {
-        if (root.left === null && root.right === null) {
+        if (!root.left && !root.right) {
           root = null;
           return root;
         }
-        if (root.left === null) {
+        if (!root.left) {
           return root.right;
         }
 
-        if (root.right === null) return root.left;
+        if (!root.right) return root.left;
 
         const succ = getSuccessor(root);
         root.value = succ.value;
@@ -73,7 +90,7 @@ class Tree {
   }
 
   insert(value) {
-    if (this.root === null) {
+    if (!this.root) {
       const root = new Node(value);
       this.root = root;
     }
@@ -116,7 +133,7 @@ class Tree {
   }
 
   prettyPrint(node, prefix = "", isLeft = true) {
-    if (node === null) {
+    if (!node) {
       return;
     }
     if (node.right !== null) {
