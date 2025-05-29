@@ -11,19 +11,55 @@ class Tree {
     this.root = null;
   }
 
-  inOrder(callback) {}
-
-  preOrder(callback) {}
-
-  postOrder(callback) {}
-
-  height(node) {}
-
   depth(node) {}
 
   isBalanced() {}
 
   rebalance() {}
+
+  height(node) {}
+
+  postOrder(callback) {
+    if (!this.root) return this.root;
+    if (!callback) throw new Error("Callback is required");
+
+    const iter = (root) => {
+      if (root) {
+        iter(root.left);
+        iter(root.right);
+        callback(root);
+      }
+    };
+    iter(this.root);
+  }
+
+  inOrder(callback) {
+    if (!this.root) return this.root;
+    if (!callback) throw new Error("Callback is required");
+
+    const iter = (root) => {
+      if (root) {
+        iter(root.left);
+        callback(root);
+        iter(root.right);
+      }
+    };
+    iter(this.root);
+  }
+
+  preOrder(callback) {
+    if (!this.root) return this.root;
+    if (!callback) throw new Error("Callback is required");
+
+    const iter = (root) => {
+      if (root) {
+        callback(root);
+        iter(root.left);
+        iter(root.right);
+      }
+    };
+    iter(this.root);
+  }
 
   levelOrder(callback) {
     if (!this.root) return this.root;
