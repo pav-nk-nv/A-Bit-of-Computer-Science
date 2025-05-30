@@ -11,13 +11,82 @@ class Tree {
     this.root = null;
   }
 
-  depth(node) {}
+  rebalance() {
+    if (!this.root) return this.root;
+    const nodes = [];
 
-  isBalanced() {}
+    const iter = (root) => {
+      if (root) {
+        iter(root.left, nodes);
+        nodes.push(root.value);
+        iter(root.right, nodes);
+      }
+    };
 
-  rebalance() {}
+    iter(this.root);
 
-  height(node) {}
+    return this.buildTree(nodes);
+  }
+
+  isBalanced() {
+    if (!this.root) return this.root;
+
+    const height = (node) => {
+      if (!node) return 0;
+      return 1 + Math.max(height(node.left), height(node.right));
+    };
+
+    let lHeight = height(root.left);
+    let rHeight = height(root.right);
+    if (Math.abs(lHeight - rHeight) > 1) return false;
+    return isBalanced(root.left) && isBalanced(root.right);
+  }
+
+  depth(node) {
+    if (!this.root) return this.root;
+    if (!callback) throw new Error("Current node is required");
+
+    const queue = [this.root];
+
+    let currentLevel = 0;
+
+    while (!queue.length) {
+      const currNode = queue.shift();
+      if (currNode.value === node.value) {
+        return currentLevel;
+      }
+      if (currNode.left !== null) queue.push(currNode.left);
+      if (currNode.right !== null) queue.push(currNode.right);
+      currentLevel++;
+    }
+
+    return null;
+  }
+
+  height(node) {
+    if (!this.root) return this.root;
+    if (!callback) throw new Error("Current node is required");
+
+    let nodeIndex = null;
+
+    const queue = [this.root];
+
+    let currentLevel = 0;
+
+    while (!queue.length) {
+      const currNode = queue.shift();
+      if (currNode.value === node.value) {
+        nodeIndex = currentLevel;
+      }
+      if (currNode.left !== null) queue.push(currNode.left);
+      if (currNode.right !== null) queue.push(currNode.right);
+      currentLevel++;
+    }
+
+    if (nodeIndex === null) return null;
+    const height = currentLevel - nodeIndex;
+    return height;
+  }
 
   postOrder(callback) {
     if (!this.root) return this.root;
