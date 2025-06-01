@@ -11,12 +11,12 @@ class Tree {
     this.root = null;
   }
 
-  rebalance() {
-    if (!this.root) return this.root;
+  rebalance = () => {
+    if (this.root === null) return null;
     const nodes = [];
 
     const iter = (root) => {
-      if (root) {
+      if (root !== null) {
         iter(root.left, nodes);
         nodes.push(root.value);
         iter(root.right, nodes);
@@ -25,149 +25,150 @@ class Tree {
 
     iter(this.root);
 
-    return this.buildTree(nodes);
-  }
+    this.buildTree(nodes);
+  };
 
-  isBalanced() {
-    if (!this.root) return this.root;
+  isBalanced = () => {
+    if (this.root === null) return null;
 
     const height = (node) => {
-      if (!node) return 0;
+      if (node === null) return 0;
       return 1 + Math.max(height(node.left), height(node.right));
     };
 
-    let lHeight = height(root.left);
-    let rHeight = height(root.right);
-    if (Math.abs(lHeight - rHeight) > 1) return false;
-    return isBalanced(root.left) && isBalanced(root.right);
-  }
+    const iter = (root) => {
+      if (root === null) return true;
 
-  depth(node) {
-    if (!this.root) return this.root;
-    if (!callback) throw new Error("Current node is required");
+      let lHeight, rHeight;
+      lHeight = height(root.left);
+      rHeight = height(root.right);
+      if (Math.abs(lHeight - rHeight) > 1) return false;
+      return iter(root.left) && iter(root.right);
+    };
 
-    const queue = [this.root];
+    return iter(this.root);
+  };
 
-    let currentLevel = 0;
+  depth = (value) => {
+    if (!this.root) return null;
 
-    while (!queue.length) {
-      const currNode = queue.shift();
-      if (currNode.value === node.value) {
-        return currentLevel;
+    const queue = [{ node: this.root, currentDepth: 0 }];
+
+    while (queue.length) {
+      const { node, currentDepth } = queue.shift();
+
+      if (node.value === value) {
+        return currentDepth;
       }
-      if (currNode.left !== null) queue.push(currNode.left);
-      if (currNode.right !== null) queue.push(currNode.right);
-      currentLevel++;
+
+      if (node.left) {
+        queue.push({ node: node.left, currentDepth: currentDepth + 1 });
+      }
+      if (node.right) {
+        queue.push({ node: node.right, currentDepth: currentDepth + 1 });
+      }
     }
 
     return null;
-  }
+  };
 
-  height(node) {
+  height = (value) => {
+    if (this.root === null) return this.root;
+
+    const curr = this.find(value);
+    if (!curr) return null;
+
+    const calculateHeight = (node) => {
+      if (!node) return -1;
+      const leftHeight = calculateHeight(node.left);
+      const rightHeight = calculateHeight(node.right);
+      return Math.max(leftHeight, rightHeight) + 1;
+    };
+
+    return calculateHeight(curr);
+  };
+
+  postOrder = (callback) => {
     if (!this.root) return this.root;
-    if (!callback) throw new Error("Current node is required");
+    if (!callback) throw new Error("Callback is required");
 
-    let nodeIndex = null;
+    const iter = (root) => {
+      if (root !== null) {
+        iter(root.left);
+        iter(root.right);
+        callback(root);
+      }
+    };
+    iter(this.root);
+  };
+
+  inOrder = (callback) => {
+    if (!this.root) return this.root;
+    if (!callback) throw new Error("Callback is required");
+
+    const iter = (root) => {
+      if (root !== null) {
+        iter(root.left);
+        callback(root);
+        iter(root.right);
+      }
+    };
+    iter(this.root);
+  };
+
+  preOrder = (callback) => {
+    if (!this.root) return this.root;
+    if (!callback) throw new Error("Callback is required");
+
+    const iter = (root) => {
+      if (root !== null) {
+        callback(root);
+        iter(root.left);
+        iter(root.right);
+      }
+    };
+    iter(this.root);
+  };
+
+  levelOrder = (callback, level) => {
+    if (this.root === null) return this.root;
+    if (!callback) throw new Error("Callback is required");
 
     const queue = [this.root];
 
     let currentLevel = 0;
 
-    while (!queue.length) {
-      const currNode = queue.shift();
-      if (currNode.value === node.value) {
-        nodeIndex = currentLevel;
-      }
-      if (currNode.left !== null) queue.push(currNode.left);
-      if (currNode.right !== null) queue.push(currNode.right);
-      currentLevel++;
-    }
-
-    if (nodeIndex === null) return null;
-    const height = currentLevel - nodeIndex;
-    return height;
-  }
-
-  postOrder(callback) {
-    if (!this.root) return this.root;
-    if (!callback) throw new Error("Callback is required");
-
-    const iter = (root) => {
-      if (root) {
-        iter(root.left);
-        iter(root.right);
-        callback(root);
-      }
-    };
-    iter(this.root);
-  }
-
-  inOrder(callback) {
-    if (!this.root) return this.root;
-    if (!callback) throw new Error("Callback is required");
-
-    const iter = (root) => {
-      if (root) {
-        iter(root.left);
-        callback(root);
-        iter(root.right);
-      }
-    };
-    iter(this.root);
-  }
-
-  preOrder(callback) {
-    if (!this.root) return this.root;
-    if (!callback) throw new Error("Callback is required");
-
-    const iter = (root) => {
-      if (root) {
-        callback(root);
-        iter(root.left);
-        iter(root.right);
-      }
-    };
-    iter(this.root);
-  }
-
-  levelOrder(callback) {
-    if (!this.root) return this.root;
-    if (!callback) throw new Error("Callback is required");
-
-    const queue = [this.root];
-
-    let level = 1;
-    let currentLevel = 0;
-
-    while (!queue.length || currentLevel <= level) {
+    while (queue.length) {
       const currentNode = queue.shift();
-      if (currentNode.left !== null) queue.push(currentNode.left);
-      if (currentNode.right !== null) queue.push(currentNode.right);
+      if (currentLevel <= level) {
+        if (currentNode.left !== null) queue.push(currentNode.left);
+        if (currentNode.right !== null) queue.push(currentNode.right);
+        currentLevel++;
+      }
       callback(currentNode);
-      currentLevel++;
     }
-  }
+  };
 
-  find(value) {
+  find = (value) => {
     if (this.root === null) return this.root;
 
     const searchNode = (root, value) => {
-      if (!root) return null;
+      if (root === null) return null;
 
       if (root.value === value) return root;
 
       if (value < root.value) {
-        return iter(root.left, value);
+        return searchNode(root.left, value);
       }
       if (value > root.value) {
-        return iter(root.right, value);
+        return searchNode(root.right, value);
       }
     };
 
     return searchNode(this.root, value);
-  }
+  };
 
-  deleteItem(value) {
+  deleteItem = (value) => {
     const getSuccessor = (current) => {
       current = current.right;
       while (current !== null && current.left !== null) {
@@ -179,25 +180,22 @@ class Tree {
     if (this.root === null) return this.root;
 
     const delNode = (root, value) => {
-      if (!root) {
+      if (root === null) {
         return root;
       }
 
       if (value < root.value) {
         root.left = delNode(root.left, value);
-      }
-      if (value > root.value) {
+      } else if (value > root.value) {
         root.right = delNode(root.right, value);
       } else {
-        if (!root.left && !root.right) {
-          root = null;
-          return root;
-        }
-        if (!root.left) {
+        if (root.left === null) {
           return root.right;
         }
 
-        if (!root.right) return root.left;
+        if (root.right === null) {
+          return root.left;
+        }
 
         const succ = getSuccessor(root);
         root.value = succ.value;
@@ -207,37 +205,35 @@ class Tree {
     };
 
     this.root = delNode(this.root, value);
-    return this.root;
-  }
+  };
 
-  insert(value) {
+  insert = (value) => {
     if (!this.root) {
       const root = new Node(value);
       this.root = root;
     }
 
     const insertNode = (root, value) => {
+      if (root === null) return new Node(value);
+
       if (root.value === value) return root;
 
       if (value < root.value) {
         root.left = insertNode(root.left, value);
-      }
-      if (value > root.value) {
+      } else if (value > root.value) {
         root.right = insertNode(root.right, value);
       }
-
       return root;
     };
 
     this.root = insertNode(this.root, value);
-    return this.root;
-  }
+  };
 
-  buildTree(array) {
+  buildTree = (array) => {
     const normalizedArray = Array.from(new Set(array)).sort((a, b) => a - b);
 
     const generateTree = (arr, startIdx, endIdx) => {
-      if (endIdx <= startIdx) return null;
+      if (endIdx < startIdx) return null;
       const midIdx = startIdx + Math.floor((endIdx - startIdx) / 2);
 
       const root = new Node(arr[midIdx]);
@@ -250,21 +246,86 @@ class Tree {
     };
 
     this.root = generateTree(normalizedArray, 0, normalizedArray.length - 1);
-    return this.root;
-  }
+  };
 
-  prettyPrint(node, prefix = "", isLeft = true) {
-    if (!node) {
-      return;
-    }
-    if (node.right !== null) {
-      prettyPrint(node.right, `${prefix}${isLeft ? "│   " : "    "}`, false);
-    }
-    console.log(`${prefix}${isLeft ? "└── " : "┌── "}${node.value}`);
-    if (node.left !== null) {
-      prettyPrint(node.left, `${prefix}${isLeft ? "    " : "│   "}`, true);
-    }
-  }
+  prettyPrint = (prefix = "", isLeft = true) => {
+    const iter = (node, prefix = "", isLeft = true) => {
+      if (!node) {
+        return;
+      }
+      if (node.right !== null) {
+        iter(node.right, `${prefix}${isLeft ? "│   " : "    "}`, false);
+      }
+      console.log(`${prefix}${isLeft ? "└── " : "┌── "}${node.value}`);
+      if (node.left !== null) {
+        iter(node.left, `${prefix}${isLeft ? "    " : "│   "}`, true);
+      }
+    };
+
+    return iter(this.root, prefix, isLeft);
+  };
 }
 
-const newTree = new Tree();
+// tests
+
+const test = new Tree();
+
+const testArr = [1, 7, 4, 23, 8, 9, 4, 3, 5, 7, 9, 67, 44, 55];
+
+test.buildTree(testArr);
+
+console.log(test.isBalanced());
+
+test.prettyPrint();
+
+test.insert(203);
+test.insert(102);
+test.insert(340);
+test.insert(500);
+
+console.log(test.isBalanced());
+
+test.prettyPrint();
+
+test.deleteItem(102);
+test.deleteItem(5);
+test.deleteItem(7);
+test.deleteItem(340);
+
+test.prettyPrint();
+
+const node_203 = test.find(203);
+const node_9 = test.find(9);
+
+console.log(node_203);
+console.log(node_9);
+
+test.levelOrder((node) => {
+  node.value = node.value * 2;
+}, 1);
+
+test.prettyPrint();
+
+test.preOrder((node) => {
+  node.value = node.value * 3;
+}, 1);
+
+test.prettyPrint();
+
+test.inOrder((node) => {
+  node.value = node.value * 4;
+}, 1);
+
+test.prettyPrint();
+
+test.postOrder((node) => {
+  node.value = node.value * 5;
+}, 1);
+
+test.prettyPrint();
+
+console.log(test.isBalanced());
+
+test.rebalance();
+
+test.prettyPrint();
